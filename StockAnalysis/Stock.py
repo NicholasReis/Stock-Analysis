@@ -39,7 +39,7 @@ def cleanData(output):
 	end = output.index("]")
 	output = output[begin +1:end]
 	
-	pieces=[10]
+	pieces = []
 	openBraces = 0
 	beginPiece = 0
 	closePiece = 0
@@ -57,15 +57,13 @@ def cleanData(output):
 				pieces.append(output[beginPiece:closePiece+1])
 		index +=1
 	
-	data=[5]
+	data =[]
 	for piece in pieces:
-		temp = piece.split(",")
-		for t in temp:
-			dataIndex = 0
-			if(t.contains("asOfDate") or t.contains("raw")):
-				pleaseLastOne = t.split(":")
-				
-				dataIndex += 1
+		f = json.loads(str(piece))
+		print(type(f))
+		print(f["reportedValue"]["raw"])
+
+	
 				
 
 
