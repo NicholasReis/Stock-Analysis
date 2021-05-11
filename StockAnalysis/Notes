@@ -11,3 +11,7 @@ It is also better encapsulation anyways so that they are less dependant and all 
 I'm going to need to create a separate notepad of all the important labels and IDs so that I can expand the utility of this later.
 
 The data is starting to take shape now. I think I have isolated the relevant information and can begin parsing it a little more easily... though I've said this a few times already.
+
+
+
+I think the next step is to separate the web request from the data processing. I shouldn't keep accessing the site when I don't need to. I can stick it in StockAnalyzer, run it once to output to a file and then comment it out. It will only need to update once every few months or for a new stock, but for testing it can be a better behaved robot.
