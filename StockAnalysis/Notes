@@ -1,0 +1,7 @@
+I figure it will be better for me to just make a notes file rather than put everything in the commit.
+
+##I think moving forward I will separate Stock.py and DataGrabber.py
+It's probably smarter to export the web data to file, then file to Stock because then I can more easily make changes later for the types of data I want.
+
+It is also better encapsulation anyways so that they are less dependant and all the data being given to StockAnalyzer is better anyways.
+
