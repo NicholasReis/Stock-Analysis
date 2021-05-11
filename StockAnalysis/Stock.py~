@@ -1,8 +1,0 @@
-import requests
-import time
-
-res = requests.get('https://codedamn.com')
-
-print(res.text)
-time.sleep(10)
-print("Done")
