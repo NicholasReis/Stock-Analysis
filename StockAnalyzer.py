@@ -2,16 +2,21 @@ import requests
 from DataGrabber import *
 from Stock import *
 
+#Future addition
 #from Stock import Analyzer
 
 def main():
+	#Prints to signify it is running
 	print("Started")
+	#Starts the DataGrabber to load information to a file for stock to pull from
 	dg = DataGrabber("amc")
+
+	#Loads the stock so it will have the needed information to analyze
 	#stock = Stock("amc")
-	#temp = stock.getYears()
-	#print(temp)
-	#print(stock.getAnnualRevenue(temp[2]))
-	#processedData = Analyzer()
+
+	#Will run the calculations so we can pull the results without
+	#cluttering up this class which will interpret them
+	#processedData = Analyzer(stock)
 
 if __name__ == "__main__":
     main()
