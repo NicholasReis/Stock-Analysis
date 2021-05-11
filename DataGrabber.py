@@ -16,15 +16,15 @@ class DataGrabber:
 		#Assigns a shortened segment from the file gnerated from the online resource
 		shortened_segment = self.read_from_file()
 		print("Income Statement found!")
-		print(shortened_segment) #Temporary diagnostic info for parsing JSON element
+		#print(shortened_segment) #Temporary diagnostic info for parsing JSON element
 
 		#Creates a smaller segment of JSON regarding just the cashflow
 		cashflow_statement = self.process_segment(shortened_segment, '"cashflowStatementHistory"')
 		#print(cashflow_statement)
 
-		#Creates a smaller segment of JSON regarding just the income_statement
-		income_statement = self.process_segment(shortened_segment, '"incomeStatementHistory"')
-		print(income_statement)
+		#Creates a smaller segment of JSON regarding just the income_statement	This stupid-ass ":{" changes the quartly vs annual
+		income_statement = self.process_segment(shortened_segment, '"incomeStatementHistory":{')
+		#print(income_statement)
 		#converts the JSON string into accessible data for yearly_data[]
 		self.process_income_statement(income_statement)
 
@@ -74,7 +74,7 @@ class DataGrabber:
 		#the end of the JSON data designated to the respective label
 		end = segment.index(']', begin)
 		end = segment.index('}', end)
-
+		print(segment[begin:end+1])
 		#Returns the data of the respective label in a JSON format
 		return segment[begin:end+1]
 
@@ -98,7 +98,7 @@ class DataGrabber:
 			#Loads data as JSON
 			data_as_json = json.loads(data)
 			#Prints just to see if it works (Which it currently does)
-			print(data_as_json["endDate"]["fmt"])
+			print(data_as_json) #data_as_json["endDate"]["fmt"]
 	
 	#Function to process the information specific to the balance sheet
 	#def process_balance_sheet(self):
