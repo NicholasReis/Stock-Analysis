@@ -14,16 +14,16 @@ class DataGrabber:
 		
 		shortened_segment = self.read_from_file()
 		print("Income Statement found!")
-		print(shortened_segment)
+		#print(shortened_segment)
 
 		cashflow_statement = self.process_segment(shortened_segment, '"cashflowStatementHistory"')
-		print(cashflow_statement)
+		#print(cashflow_statement)
 
 		income_statement = self.process_segment(shortened_segment, '"incomeStatementHistory"')
 		print(income_statement)
-
+		self.process_income_statement(income_statement)
 		balance_history = self.process_segment(shortened_segment, '"balanceSheetHistory"')
-		print(balance_history)
+		#print(balance_history)
 
 		#time.sleep(5)
 		
@@ -63,6 +63,24 @@ class DataGrabber:
 		end = segment.index(']', begin)
 		end = segment.index('}', end)
 		return segment[begin:end]
+
+	def process_income_statement(self, statement):
+		income_data = []
+		while('researchDevelopment' in statement):
+			begin = statement.index('"researchDevelopment"')-1
+			end = statement.index('}}', begin)+2
+			income_data.append(statement[begin:end])
+			statement = statement[end:]
+		for data in income_data:
+			data_as_json = json.loads(data)
+			print(data_as_json["endDate"]["fmt"])
+	
+	#def process_balance_sheet(self):
+
+
+	#def process_cash_flow(self):
+
+
 
 	def pullInfo(self, infoSource, label):
 		begin = infoSource.index(label)
