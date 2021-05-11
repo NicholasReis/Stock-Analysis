@@ -9,3 +9,5 @@ It is also better encapsulation anyways so that they are less dependant and all 
 
 
 I'm going to need to create a separate notepad of all the important labels and IDs so that I can expand the utility of this later.
+
+The data is starting to take shape now. I think I have isolated the relevant information and can begin parsing it a little more easily... though I've said this a few times already.
