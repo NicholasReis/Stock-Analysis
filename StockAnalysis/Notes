@@ -5,3 +5,7 @@ It's probably smarter to export the web data to file, then file to Stock because
 
 It is also better encapsulation anyways so that they are less dependant and all the data being given to StockAnalyzer is better anyways.
 
+
+
+
+I'm going to need to create a separate notepad of all the important labels and IDs so that I can expand the utility of this later.

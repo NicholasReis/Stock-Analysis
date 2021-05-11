@@ -10,8 +10,19 @@ class DataGrabber:
 	def __init__(self, stock_symbol):
 		self.stock_symbol = stock_symbol
 		
-		income_statement = self.grabResource('https://finance.yahoo.com/quote/'+ stock_symbol +'/financials?p='+ stock_symbol)
+		shortened_segment = self.grabResource('https://finance.yahoo.com/quote/'+ stock_symbol +'/financials?p='+ stock_symbol)
 		print("Income Statement found!")
+		print(shortened_segment)
+
+		cashflow_statement = self.process_segment(shortened_segment, '"cashflowStatementHistory"')
+		print(cashflow_statement)
+
+		income_statement = self.process_segment(shortened_segment, '"incomeStatementHistory"')
+		print(income_statement)
+
+		balance_history = self.process_segment(shortened_segment, '"balanceSheetHistory"')
+		print(balance_history)
+
 		#time.sleep(5)
 		
 		#balance_statement = grabResource('https://finance.yahoo.com/quote/'+ stock_symbol +'/balance-sheet?p='+ stock_symbol)
@@ -22,8 +33,8 @@ class DataGrabber:
 		#print("Cash Flow found!")
 
 		#Unfortunately the keys to the data must be found in the source manually
-		annualRevenue = self.pullInfo(income_statement, "annualTotalRevenue")
-		totalAssets = self.pullInfo(income_statement, "totalAssets")
+		#annualRevenue = self.pullInfo(income_statement, "annualTotalRevenue")
+		#totalAssets = self.pullInfo(income_statement, "totalAssets")
 		
 		#annualTotalRevenue = cleanData(output)
 
@@ -31,10 +42,17 @@ class DataGrabber:
 
 	def grabResource(self, webPage):
 		html = requests.get(webPage)
-		begin = html.text.index("QuoteSummaryStore")
-		end = html.text.index("FinanceConfigStore")
-		shortened_segment = html.text[begin+1:end]
+		begin = html.text.index('"QuoteSummaryStore"')
+		end = html.text.index('"FinanceConfigStore"')
+		shortened_segment = html.text[begin:end]
 		return shortened_segment
+
+	def process_segment(self, segment, label):
+		begin = segment.index(label)
+		end = segment.index(']', begin)
+		end = segment.index('}', end)
+		return segment[begin:end]
+
 
 	def pullInfo(self, infoSource, label):
 		begin = infoSource.index(label)

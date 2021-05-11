@@ -6,9 +6,9 @@ from Stock import *
 def main():
 	print("Started")
 	stock = Stock("amc")
-	temp = stock.getYears()
-	print(temp)
-	print(stock.getAnnualRevenue(temp[2]))
+	#temp = stock.getYears()
+	#print(temp)
+	#print(stock.getAnnualRevenue(temp[2]))
 	#processedData = Analyzer()
 
 if __name__ == "__main__":
