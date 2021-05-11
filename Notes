@@ -1,0 +1,14 @@
+I figure it will be better for me to just make a notes file rather than put everything in the commit.
+
+##I think moving forward I will separate Stock.py and DataGrabber.py
+It's probably smarter to export the web data to file, then file to Stock because then I can more easily make changes later for the types of data I want.
+
+It is also better encapsulation anyways so that they are less dependant and all the data being given to StockAnalyzer is better anyways.
+
+
+
+
+I'm going to need to create a separate notepad of all the important labels and IDs so that I can expand the utility of this later.
+
+The data is starting to take shape now. I think I have isolated the relevant information and can begin parsing it a little more easily... though I've said this a few times already.
+I'VE DONE IT! I can import the data! I was accidentally working with quartly data though so I need to find the annual data and pray it's formatted the same way.
