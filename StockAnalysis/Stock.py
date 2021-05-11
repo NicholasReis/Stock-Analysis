@@ -1,4 +1,4 @@
-from DataGrabber import DataGrabber
+
 
 class Stock:
 	yearlyData = dict()
@@ -7,7 +7,6 @@ class Stock:
 	def __init__(self, stock_symbol):
 		self.stock_symbol = stock_symbol
 		#self.loadFromFile()
-		DataGrabber(stock_symbol)
 	
 	def loadFromFile(self):
 		lines =[]

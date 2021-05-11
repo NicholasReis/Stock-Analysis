@@ -10,7 +10,9 @@ class DataGrabber:
 	def __init__(self, stock_symbol):
 		self.stock_symbol = stock_symbol
 		
-		shortened_segment = self.grabResource('https://finance.yahoo.com/quote/'+ stock_symbol +'/financials?p='+ stock_symbol)
+		#self.write_to_file()
+		
+		shortened_segment = self.read_from_file()
 		print("Income Statement found!")
 		print(shortened_segment)
 
@@ -38,7 +40,16 @@ class DataGrabber:
 		
 		#annualTotalRevenue = cleanData(output)
 
-		
+	def write_to_file(self):
+		shortened_segment = self.grabResource('https://finance.yahoo.com/quote/'+ self.stock_symbol +'/financials?p='+ self.stock_symbol)
+		#I am going to have to handle overwriting data or deleting the file later		
+		with open(self.stock_symbol+".txt", "w") as output_file:
+			output_file.write(shortened_segment)
+
+	def read_from_file(self):
+		with open(self.stock_symbol + ".txt") as input_file:
+			text_from_file = input_file.read()
+		return text_from_file
 
 	def grabResource(self, webPage):
 		html = requests.get(webPage)
@@ -52,7 +63,6 @@ class DataGrabber:
 		end = segment.index(']', begin)
 		end = segment.index('}', end)
 		return segment[begin:end]
-
 
 	def pullInfo(self, infoSource, label):
 		begin = infoSource.index(label)
