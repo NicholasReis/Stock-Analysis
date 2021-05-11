@@ -1,5 +1,5 @@
 year:2017
-revenue:2000000000
+annual_revenue:2000000000
 net_income:500000000
 shares_issued:12000000
 current_assets:34000000
@@ -9,7 +9,7 @@ capital_expenditures:1230000
 price:151.31
 
 year:2018
-revenue:3000000000
+annual_revenue:3000000000
 net_income:600000000
 shares_issued:11000000
 current_assets:38000000
@@ -19,7 +19,7 @@ capital_expenditures:990000
 price:186.69
 
 year:2019
-revenue:1000000000
+annual_revenue:1000000000
 net_income:800000000
 shares_issued:6000000
 current_assets:12000000
@@ -29,7 +29,7 @@ capital_expenditures:1000000
 price:114.23
 
 year:2020
-revenue:4000000000
+annual_revenue:4000000000
 net_income:800000000
 shares_issued:3000000
 current_assets:22000000
