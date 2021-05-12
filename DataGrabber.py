@@ -235,7 +235,8 @@ class DataGrabber:
 
 	#Returns the recorded years of data
 	def getYears(self):
-		return range(self.minYear, self.maxYear)
+		#Requires the +1 otherwise it terminates before maxYear
+		return range(self.minYear, self.maxYear+1)
 
 #	def delete_files(self):
 #		years = self.getYears()

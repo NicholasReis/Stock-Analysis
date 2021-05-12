@@ -43,9 +43,9 @@ class Stock:
 	#This will likey become getData and accept a label as another argument, I'm not sure why I did it this way
 	#Though I suspect it's because of the way the data was separated by DataGrabber, but if I output it in a nice
 	#Way that shouldn't end up mattering too much.
-	def getAnnualRevenue(self, year):
+	def getData(self, year, label):
 		#Returns the annual revenue from the associated year
-		return self.yearlyData[str(year)]["annual_revenue"]
+		return self.yearlyData[str(year)][label]
 
 		#Information I will want to keep track of. Will delete when I start implementing the Analyzer Class
 		#pe
