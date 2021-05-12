@@ -10,9 +10,10 @@ def main():
 	print("Started")
 	#Starts the DataGrabber to load information to a file for stock to pull from
 	dg = DataGrabber("amc")
+	years = dg.getYears()
 
 	#Loads the stock so it will have the needed information to analyze
-	#stock = Stock("amc")
+	stock = Stock("amc", years)
 
 	#Will run the calculations so we can pull the results without
 	#cluttering up this class which will interpret them
