@@ -3,7 +3,6 @@
 class Stock:
 	#Creates a global dictionary
 	yearlyData = dict()
-	
 	#Creates a global stock symbol variable
 	stock_symbol = ""
 	def __init__(self, stock_symbol, years):
@@ -54,13 +53,4 @@ class Stock:
 		#Returns the annual revenue from the associated year
 		return self.yearlyData[str(year)][label]
 
-		#Information I will want to keep track of. Will delete when I start implementing the Analyzer Class
-		#pe
-		#annual_revenue
-		#profit_margin #(Net income / Total Revenue)
-		#shares_issued
-		#current_assets
-		#current_liabilities
-		#cash_flow
-		#capital_expenditures
-		#price #price to free cash flow < 15%
+		
