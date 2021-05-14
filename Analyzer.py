@@ -22,7 +22,7 @@ class Analyzer:
 		self.assign_annual_revenue_metric()
 		self.assign_profit_margin_metric()
 		self.assign_shares_issued_metric()
-		#self.assign_current_assets_vs_current_liabilities_metric()
+		self.assign_current_assets_vs_current_liabilities_metric()
 		#self.assign_cashflow_metric()
 		#self.assign_capital_expenditures_metric()
 		#self.assign_price_to_free_cashflow_metric()
@@ -93,25 +93,59 @@ class Analyzer:
 		print("Average profit margin: " + str((running_profit_margin_sum/len(self.years))*100)+"%")
 
 
+	#This counts the number of shares and basically checks for stock inflation
 	def assign_shares_issued_metric(self):
+		#Running sum of shares in circulation
 		running_sum_issued_shares = 0
+		
+		#Gets the first recorded data point of how many shares there were
 		first_recorded_shares_issued= self.stock.getData(self.years[0], "issuance_of_stock")
 
+		#For each year we have recorded data for
 		for year in self.years:
+			#Adds the total number of stocks that year to the running sum
 			running_sum_issued_shares += self.stock.getData(year, "issuance_of_stock")
 		
+		#If there is a higher average of shares than there was at first
 		if(running_sum_issued_shares/len(self.years) > first_recorded_shares_issued):
 			#Shares are being created
 			print("The company is creating more shares diluting ownership, this could reduce the price of the stock in the future")
 		else:
+			#Shares are being bought
 			print("The company is buying back their stocks which is increasing the value")
+
+		#Outputs for now, will change
 		print("Initial stocks issued: "+str(first_recorded_shares_issued))
 		print("Average existing stocks over the past " + str(len(self.years)) + " years: " +str((running_sum_issued_shares/len(self.years))))
 
 
-	#def assign_current_assets_vs_current_liabilities_metric(self):
-		
+	#This will calculate the safety of the investment
+	#If they have a lot of assets and few liabilities they can afford to stay afloat for that many years just selling off their assets without revenue
+	#If they have high liabilities and low assets then they are bleeding money
+	def assign_current_assets_vs_current_liabilities_metric(self):
+		#Running sum for the asset to liability ratio
+		running_sum_total_assets_vs_total_liabilities = 0
 
+		#Added these for when I improve the analysis. I will be checking first and last years in more depth
+		#With the right algorithm I will be able to see if it's an expected assets/liability for the company
+		#or just something weird going on
+		#first_recorded_assets = self.stock.getData(self.years[0], "total_assets")
+		#first_recorded_liabilities = self.stock.getData(self.years[0], "total_liab")
+		#first_recorded_assets_vs_liabilities = first_recorded_assets/first_recorded_liabilities
+
+		#For each year we have recorded data for
+		for year in self.years:
+			#Takes down both the yearly assets and liabilities count
+			recorded_assets = self.stock.getData(year, "total_assets")
+			recorded_liabilities = self.stock.getData(year, "total_liab")
+			#Creates the assets to liabilities ratio and adds it to the running sum
+			running_sum_total_assets_vs_total_liabilities += recorded_assets/recorded_liabilities
+
+		#Outputs for now, will change
+		print("The number of times the company could pay off all it's debts is: " + str(running_sum_total_assets_vs_total_liabilities/len(self.years)))
+
+
+	
 	#def assign_cashflow_metric(self):
 
 	
