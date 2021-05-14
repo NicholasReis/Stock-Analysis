@@ -24,8 +24,7 @@ class Analyzer:
 		self.assign_shares_issued_metric()
 		self.assign_current_assets_vs_current_liabilities_metric()
 		self.assign_cashflow_metric()
-		#self.assign_capital_expenditures_metric()
-		#self.assign_price_to_free_cashflow_metric()
+		self.assign_price_to_free_cashflow_metric()
 
 	#Analyzes the data--------------------------------vv
 
@@ -154,8 +153,8 @@ class Analyzer:
 		#Running sum of the cashflow to compare against initial cashflow
 		running_cashflow_sum = 0
 		
-		#First recorded cashflow to compare against the average to check for growth
-		first_recorded_cashflow = self.stock.getData(self.years[0], "total_cash_from_operating_activities")-self.stock.getData(self.years[0], "capital_expenditures")
+		#First recorded cashflow to compare against the average to check for growth (self. for storage because I need it in cash flow)
+		self.first_recorded_cashflow = self.stock.getData(self.years[0], "total_cash_from_operating_activities")-self.stock.getData(self.years[0], "capital_expenditures")
 		
 		#For every year we have data on
 		for year in self.years:
@@ -165,7 +164,9 @@ class Analyzer:
 			#Adds the cashflow to the running sum
 			running_cashflow_sum += cash_from_ops-capital_expenditures
 
-		if(running_cashflow_sum/len(self.years) > first_recorded_cashflow):
+		#I need this for later so I store it
+		self.total_cashflow = running_cashflow_sum/len(self.years)
+		if(self.total_cashflow > self.first_recorded_cashflow):
 			#Increasing Cashflow
 			print("Cashflow is increasing!")
 		else:
@@ -173,17 +174,38 @@ class Analyzer:
 			print("Cashflow is decreasing...")
 
 		#Outputs for now, will change
-		print("Initial Cashflow: " + str(first_recorded_cashflow))
+		print("Initial Cashflow: " + str(self.first_recorded_cashflow))
 		print("Average Cashflow: " + str(running_cashflow_sum/len(self.years)))
 
-	
-	#def assign_capital_expenditures_metric(self):
 
+	#This should predict the growth speed. The free cash should increase the operating income assuming they actually use the free cash to improve the company
+	def assign_price_to_free_cashflow_metric(self):
+		#Later on I need to evaluate marketcap/15 < cashflow it's good if this is true, bad if it is not
 		
-	#def assign_price_to_free_cashflow_metric(self):
+		#First recorded cashflow to compare against the average to check for growth (self. for storage because I need it in cash flow)
+		self.first_recorded_cashflow = self.stock.getData(self.years[0], "total_cash_from_operating_activities")-self.stock.getData(self.years[0], "capital_expenditures")
+		percent_difference_in_cashflow = self.total_cashflow/self.first_recorded_cashflow
+		if(percent_difference_in_cashflow > 0):
+			#Increasing Cashflow
+			print("Cashflow has grown in the past " + str(len(self.years)) + " years by " + str(percent_difference_in_cashflow *100) + "%")
+		else:
+			#Decreasing Cashflow
+			print("Cashflow has fallen in the past " + str(len(self.years)) + " years by " + str(percent_difference_in_cashflow *100) + "%")
+
+		#Something feels really wrong about this, but I can't put my finger on it right now. I'll investigate later.
+		#I think it's because it feels like it should be included with the assign_cashflow_metric. I might merge them into one.
 
 
 	#Gets the analyzed values--------------------------vv
+	#These are going to take the data and output it in user friendly ways based on the variables I will assign above
+	#For instance the annual revenue function may output something like this
+	#
+	#<Label> appears to be growing by x%! This means that there is interest in the product/service they provide.
+	#Historical data | 2020 | 2019 | 2018 | 2017
+	#Revenue in 1000s| 14200| 12400| 10300| 8100
+	#
+	#We will see how it goes though.
+	
 	#def get_annual_revenue_metric(self):
 
 
