@@ -23,7 +23,7 @@ class Analyzer:
 		self.assign_profit_margin_metric()
 		self.assign_shares_issued_metric()
 		self.assign_current_assets_vs_current_liabilities_metric()
-		#self.assign_cashflow_metric()
+		self.assign_cashflow_metric()
 		#self.assign_capital_expenditures_metric()
 		#self.assign_price_to_free_cashflow_metric()
 
@@ -86,6 +86,7 @@ class Analyzer:
 			#Increasing profit margin
 			print("Profit is increasing!")
 		else:
+			#Decreasing profit margin
 			print("Profit margin is decreasing...")
 
 		#Outputs for now, will change
@@ -145,8 +146,35 @@ class Analyzer:
 		print("The number of times the company could pay off all it's debts is: " + str(running_sum_total_assets_vs_total_liabilities/len(self.years)))
 
 
-	
-	#def assign_cashflow_metric(self):
+	#This is similar to profit margin and revenue, this will calculate how much money a company generates from it's core business
+	#subtracted by the amount of money they have to put into the company for upkeep.
+	#When you subtract the upkeep from the cash from operations you will get a picture of the money they have to invest in growing their core company
+
+	def assign_cashflow_metric(self):
+		#Running sum of the cashflow to compare against initial cashflow
+		running_cashflow_sum = 0
+		
+		#First recorded cashflow to compare against the average to check for growth
+		first_recorded_cashflow = self.stock.getData(self.years[0], "total_cash_from_operating_activities")-self.stock.getData(self.years[0], "capital_expenditures")
+		
+		#For every year we have data on
+		for year in self.years:
+			#Grabs relevant data
+			cash_from_ops = self.stock.getData(year, "total_cash_from_operating_activities")
+			capital_expenditures = self.stock.getData(year, "capital_expenditures")
+			#Adds the cashflow to the running sum
+			running_cashflow_sum += cash_from_ops-capital_expenditures
+
+		if(running_cashflow_sum/len(self.years) > first_recorded_cashflow):
+			#Increasing Cashflow
+			print("Cashflow is increasing!")
+		else:
+			#Decreasing Cashflow
+			print("Cashflow is decreasing...")
+
+		#Outputs for now, will change
+		print("Initial Cashflow: " + str(first_recorded_cashflow))
+		print("Average Cashflow: " + str(running_cashflow_sum/len(self.years)))
 
 	
 	#def assign_capital_expenditures_metric(self):
