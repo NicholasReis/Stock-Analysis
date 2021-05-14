@@ -1,9 +1,7 @@
 import requests
 from DataGrabber import *
 from Stock import *
-
-#Future addition
-#from Stock import Analyzer
+from Analyzer import *
 
 def main():
 	#Prints to signify it is running

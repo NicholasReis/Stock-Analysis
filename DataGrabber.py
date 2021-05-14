@@ -1,6 +1,5 @@
 import requests
 import json
-import os
 
 class DataGrabber:
 	#Creates a global dictionary to hold all the yearly data
