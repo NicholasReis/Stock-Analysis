@@ -33,10 +33,17 @@ class Stock:
 				if(values[1] == "{}\n"):
 					data[str(values[0])] = ""
 				else:
+					#The string format looks like label>{'raw':#######, 'fmt':########, etc...}
+					#So this grabs just the raw number rather than any of the formatted versions
+					#Honestly I could probably process this in DataGrabber rather than here, but I will
+					#Do that when I refactor the classes to go file-less
+					#With that said, this starts at the first ":" and ends at the first ","
 					begin = str(values[1]).index(':') +1
 					end = values[1].index(',')
+					#Takes the raw number and assigns it as an integer to be worked with as a number
 					data[str(values[0])] = int(values[1][begin:end])
-			
+			#Adds all the collected data (in dictionary form) into the yearly dictionary
+			#That way when you call yearlyData[<year>] you get all the financials from just that year
 			self.yearlyData[str(year)] = data
 
 	#Using the keys given by getYears they can be sent here to get the Annual Revenue for that year

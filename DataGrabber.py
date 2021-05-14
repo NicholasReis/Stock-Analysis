@@ -5,8 +5,11 @@ import os
 class DataGrabber:
 	#Creates a global dictionary to hold all the yearly data
 	yearly_data = dict()
+
+	#Just sets the min and max year outside of any reasonable year so that current years will override them
 	minYear = 5000
 	maxYear = 0
+
 	def __init__(self, stock_symbol):
 		#Assigns stock symbol to a non-existent global variable
 		#I need to investigate this, but I suspect it's just a quirk of python
@@ -35,9 +38,10 @@ class DataGrabber:
 
 		#converts the JSON string into accessible data for yearly_data[]
 		self.process_income_statement(income_statement)
-		#
+		
 		#converts the JSON string into accessible data for yearly_data[]
 		self.process_balance_sheet(balance_history)
+		
 		#converts the JSON string into accessible data for yearly_data[]
 		self.process_cashflow(cashflow_statement)
 		
@@ -120,6 +124,8 @@ class DataGrabber:
 
 			#Loads the data into a file
 			with open(self.stock_symbol+str(data_as_json["endDate"]["fmt"][0:4])+".txt", "w") as output_file:
+				#Outputs the data in a format that will be easy for Stock.py to read (Eventually I will make Stock pull from here instead of a file)
+				#Yes this is ugly and can be done better, yes I will do it soon
 				output_file.write("research_development>"+str(data_as_json["researchDevelopment"])+'\n')
 				output_file.write("pretax_income>"+str(data_as_json["incomeBeforeTax"])+'\n')
 				output_file.write("minority_interest>"+str(data_as_json["minorityInterest"])+'\n')
@@ -164,6 +170,7 @@ class DataGrabber:
 			
 			#Loads the data into a file
 			with open(self.stock_symbol+str(data_as_json["endDate"]["fmt"][0:4])+".txt", "a") as output_file:
+				#Same as above block of ugly code, this will be reconfigured later to be less gross, but for now it works
 				output_file.write("intangible_assets>"+str(data_as_json["intangibleAssets"])+'\n')
 				output_file.write("capital_surplus>"+str(data_as_json["capitalSurplus"])+'\n')
 				output_file.write("total_liab>"+str(data_as_json["totalLiab"])+'\n')
@@ -214,6 +221,7 @@ class DataGrabber:
 			
 			#Loads the data into a file
 			with open(self.stock_symbol+str(data_as_json["endDate"]["fmt"][0:4])+".txt", "a") as output_file:
+				#Yes, still ugly, still here, still the same excuse, change will come
 				output_file.write("investments>"+str(data_as_json["investments"])+'\n')
 				output_file.write("change_to_liabilities>"+str(data_as_json["changeToLiabilities"])+'\n')
 				output_file.write("total_cashflows_from_investing_activities>"+str(data_as_json["totalCashflowsFromInvestingActivities"])+'\n')
@@ -238,6 +246,7 @@ class DataGrabber:
 		#Requires the +1 otherwise it terminates before maxYear
 		return range(self.minYear, self.maxYear+1)
 
+	#Idk, I didn't want OS imported, when I remove files and just import data directly there will be no need for this (Not that it really works anyways?)
 #	def delete_files(self):
 #		years = self.getYears()
 #		print(years)
