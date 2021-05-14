@@ -21,11 +21,11 @@ class Analyzer:
 		#Processes all the data------------------vv
 		self.assign_annual_revenue_metric()
 		self.assign_profit_margin_metric()
-		#assign_shares_issued_metric()
-		#assign_current_assets_vs_current_liabilities_metric()
-		#assign_cashflow_metric()
-		#assign_capital_expenditures_metric()
-		#assign_price_to_free_cashflow_metric()
+		self.assign_shares_issued_metric()
+		#self.assign_current_assets_vs_current_liabilities_metric()
+		#self.assign_cashflow_metric()
+		#self.assign_capital_expenditures_metric()
+		#self.assign_price_to_free_cashflow_metric()
 
 	#Analyzes the data--------------------------------vv
 
@@ -92,12 +92,22 @@ class Analyzer:
 		print("Initial profit margin: " + str((first_recorded_profit_margin)*100)+"%")
 		print("Average profit margin: " + str((running_profit_margin_sum/len(self.years))*100)+"%")
 
-	#def get_shares_issued_metric(self):
 
-		
+	def assign_shares_issued_metric(self):
+		running_sum_issued_shares = 0
+		first_recorded_shares_issued= self.stock.getData(self.years[0], "issuance_of_stock")
 
-	#def assign_shares_issued_metric(self):
+		for year in self.years:
+			running_sum_issued_shares += self.stock.getData(year, "issuance_of_stock")
 		
+		if(running_sum_issued_shares/len(self.years) > first_recorded_shares_issued):
+			#Shares are being created
+			print("The company is creating more shares diluting ownership, this could reduce the price of the stock in the future")
+		else:
+			print("The company is buying back their stocks which is increasing the value")
+		print("Initial stocks issued: "+str(first_recorded_shares_issued))
+		print("Average existing stocks over the past " + str(len(self.years)) + " years: " +str((running_sum_issued_shares/len(self.years))))
+
 
 	#def assign_current_assets_vs_current_liabilities_metric(self):
 		
@@ -118,7 +128,6 @@ class Analyzer:
 	#def get_profit_margin_metric(self):
 
 
-
 	#def get_assets_vs_liabilities_metric(self):
 
 
@@ -130,6 +139,10 @@ class Analyzer:
 
 	#def get_price_to_free_cashflow_metric(self):
 
+
+	#def get_shares_issued_metric(self):
+	
+		
 
 	#Information I will want to keep track of. Will delete when I start implementing
 		#pe
