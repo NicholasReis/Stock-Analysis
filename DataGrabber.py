@@ -20,7 +20,6 @@ class DataGrabber:
 		#Assigns a shortened segment from the file gnerated from the online resource
 		shortened_segment = self.read_from_file()
 		print("Files found!")
-		#print(shortened_segment) #Temporary diagnostic info for parsing JSON element
 
 		#Creates a smaller segment of JSON regarding just the cashflow
 		cashflow_statement = self.process_segment(shortened_segment, '"cashflowStatementHistory"')
@@ -39,10 +38,10 @@ class DataGrabber:
 		self.process_income_statement(income_statement)
 		
 		#converts the JSON string into accessible data for yearly_data[]
-		self.process_balance_sheet(balance_history)
+		self.process_income_statement(balance_history)
 		
 		#converts the JSON string into accessible data for yearly_data[]
-		self.process_cashflow(cashflow_statement)
+		self.process_income_statement(cashflow_statement)
 		
 		#self.delete_files()
 		
@@ -95,163 +94,42 @@ class DataGrabber:
 	def process_income_statement(self, statement):
 		#Creates an array for storing the data associated with each year (Though currently quarter)
 		income_data = []
+		
+		#Finds the starting point of the data we need to collect
+		begin = statement.index('[')
+		#Finds the opening quotation of the first data point
+		begin = statement.index('"', begin)
+		#Finds the ending quotation of the first data point
+		end = statement.index('"', begin+1)+1
+		#Sets the first label (including quotation marks) in case of changing order of data or some that is unused by some companies
+		first_label = statement[begin:end]
+
 		#Checks that there is another element (researchDevelopment is the first label in the data)
-		while('researchDevelopment' in statement):
+		while(first_label in statement):
 			#If there is it will take the index of the first quotation mark
-			begin = statement.index('"researchDevelopment"')-1
+			begin = statement.index(first_label)-1
 			#It will then take the index of the end of the data
 			end = statement.index('}}', begin)+2
 			#And input that string of data into the array
 			income_data.append(statement[begin:end])
 			#Chops off the segment we processed so that instance of researchDevelopment wont come up again
 			statement = statement[end:]
-
+		#print(income_data[0])
 		#Takes each string of data and loads it into a JSON object
 		for data in income_data:
-			#Loads data as JSON
-			data_as_json = json.loads(data)
-			
-			#Yes this is sloppy, but I desperately don't want to import OS-------------------
-			#Assigns the largest year with recorded data
-			if(int(data_as_json["endDate"]["fmt"][0:4]) > self.maxYear):
-				self.maxYear = int(data_as_json["endDate"]["fmt"][0:4])
-
-			#Assigns the smallest year with recorded data
-			if(int(data_as_json["endDate"]["fmt"][0:4]) < self.minYear):
-				self.minYear = int(data_as_json["endDate"]["fmt"][0:4])
-			#Because if I do I will have to make adjustments for mac and windows-------------
-
-			#Loads the data into a file
-			with open(self.stock_symbol+str(data_as_json["endDate"]["fmt"][0:4])+".txt", "w") as output_file:
-				#Outputs the data in a format that will be easy for Stock.py to read (Eventually I will make Stock pull from here instead of a file)
-				#Yes this is ugly and can be done better, yes I will do it soon
-				output_file.write("research_development>"+str(data_as_json["researchDevelopment"])+'\n')
-				output_file.write("pretax_income>"+str(data_as_json["incomeBeforeTax"])+'\n')
-				output_file.write("minority_interest>"+str(data_as_json["minorityInterest"])+'\n')
-				output_file.write("net_income>"+str(data_as_json["netIncome"])+'\n')
-				output_file.write("sellingGeneralAdministrative>"+str(data_as_json["sellingGeneralAdministrative"])+'\n')
-				output_file.write("grossProfit>"+str(data_as_json["grossProfit"])+'\n')
-				output_file.write("earnings_before_income_taxes>"+str(data_as_json["ebit"])+'\n') #earnings I think
-				output_file.write("operating_income>"+str(data_as_json["operatingIncome"])+'\n')
-				output_file.write("otherOperatingExpenses>"+str(data_as_json["otherOperatingExpenses"])+'\n')
-				output_file.write("interest_expense>"+str(data_as_json["interestExpense"])+'\n')
-				output_file.write("extraordinary_items>"+str(data_as_json["extraordinaryItems"])+'\n')
-				output_file.write("non_recurring>"+str(data_as_json["nonRecurring"])+'\n')				
-				output_file.write("other_items>"+str(data_as_json["otherItems"])+'\n')
-				output_file.write("income_tax_expense>"+str(data_as_json["incomeTaxExpense"])+'\n')
-				output_file.write("total_revenue>"+str(data_as_json["totalRevenue"])+'\n')
-				output_file.write("total_operating_expenses>"+str(data_as_json["totalOperatingExpenses"])+'\n')				
-				output_file.write("cost_of_revenue>"+str(data_as_json["costOfRevenue"])+'\n')
-				output_file.write("total_other_income_expense_net>"+str(data_as_json["totalOtherIncomeExpenseNet"])+'\n')
-				output_file.write("discontinued_operations>"+str(data_as_json["discontinuedOperations"])+'\n')
-				output_file.write("net_income_from_continuing_ops>"+str(data_as_json["netIncomeFromContinuingOps"])+'\n')				
-				output_file.write("net_income_applicable_to_common_shares>"+str(data_as_json["netIncomeApplicableToCommonShares"])+'\n')
+			while('"' in data):
+				begin = data.index('"')
+				end = data.index('"', begin+1)+1
+				print("Label: " + data[begin:end])
+				data = data[data.index(":")+1:]
+				end = data.index("}")+1
+				print("Data: " + data[:end])
+				data = data[end:]
 				
-	#Function to process the information specific to the balance sheet
-	def process_balance_sheet(self, statement):
-		#Creates an array for storing the data associated with each year (Though currently quarter)
-		income_data = []
-		#Checks that there is another element (intangibleAssets is the first label in the data)
-		while('intangibleAssets' in statement):
-			#If there is it will take the index of the first quotation mark
-			begin = statement.index('"intangibleAssets"')-1
-			#It will then take the index of the end of the data
-			end = statement.index('}}', begin)+2
-			#And input that string of data into the array
-			income_data.append(statement[begin:end])
-			#Chops off the segment we processed so that instance of intangibleAssets wont come up again
-			statement = statement[end:]
+			print()
 
-		#Takes each string of data and loads it into a JSON object
-		for data in income_data:
-			#Loads data as JSON
-			data_as_json = json.loads(data)
-			
-			#Loads the data into a file
-			with open(self.stock_symbol+str(data_as_json["endDate"]["fmt"][0:4])+".txt", "a") as output_file:
-				#Same as above block of ugly code, this will be reconfigured later to be less gross, but for now it works
-				output_file.write("intangible_assets>"+str(data_as_json["intangibleAssets"])+'\n')
-				#output_file.write("capital_surplus>"+str(data_as_json["capitalSurplus"])+'\n')
-				output_file.write("total_liab>"+str(data_as_json["totalLiab"])+'\n')
-				output_file.write("total_stockholder_equity>"+str(data_as_json["totalStockholderEquity"])+'\n')
-				#output_file.write("deferred_long_term_liabilities>"+str(data_as_json["deferredLongTermLiab"])+'\n')
-				output_file.write("other_current_liabilities>"+str(data_as_json["otherCurrentLiab"])+'\n')
-				output_file.write("total_assets>"+str(data_as_json["totalAssets"])+'\n')
-				output_file.write("common_stock>"+str(data_as_json["commonStock"])+'\n')
-				output_file.write("other_current_assets>"+str(data_as_json["otherCurrentAssets"])+'\n')
-				output_file.write("retained_earnings>"+str(data_as_json["retainedEarnings"])+'\n')
-				output_file.write("other_liabilities>"+str(data_as_json["otherLiab"])+'\n')
-				output_file.write("good_will>"+str(data_as_json["goodWill"])+'\n')
-				#output_file.write("treasury_stock>"+str(data_as_json["treasuryStock"])+'\n')
-				output_file.write("other_assets>"+str(data_as_json["otherAssets"])+'\n')
-				output_file.write("cash>"+str(data_as_json["cash"])+'\n')
-				output_file.write("total_current_liabilities>"+str(data_as_json["totalCurrentLiabilities"])+'\n')
-				#output_file.write("deferred_long_term_asset_charges>"+str(data_as_json["deferredLongTermAssetCharges"])+'\n')
-				#output_file.write("short_long_term_debt>"+str(data_as_json["shortLongTermDebt"])+'\n')
-				#output_file.write("other_stockholder_equity>"+str(data_as_json["otherStockholderEquity"])+'\n')
-				output_file.write("property_plant_equipment>"+str(data_as_json["propertyPlantEquipment"])+'\n')
-				output_file.write("total_current_assets>"+str(data_as_json["totalCurrentAssets"])+'\n')
-				#output_file.write("long_term_investments>"+str(data_as_json["longTermInvestments"])+'\n')
-				output_file.write("net_tangible_assets>"+str(data_as_json["netTangibleAssets"])+'\n')
-				output_file.write("net_receivables>"+str(data_as_json["netReceivables"])+'\n')
-				#output_file.write("long_term_debt>"+str(data_as_json["longTermDebt"])+'\n')
-				#output_file.write("inventory>"+str(data_as_json["inventory"])+'\n')
-				output_file.write("accounts_payable>"+str(data_as_json["accountsPayable"])+'\n')
-
-	#Function to process the information specific to the cashflow
-	def process_cashflow(self, statement):
-		#Creates an array for storing the data associated with each year (Though currently quarter)
-		income_data = []
-		#Checks that there is another element (investments is the first label in the data)
-		while('investments' in statement):
-			#If there is it will take the index of the first quotation mark
-			begin = statement.index('"investments"')-1
-			#It will then take the index of the end of the data
-			end = statement.index('}}', begin)+2
-			#And input that string of data into the array
-			income_data.append(statement[begin:end])
-			#Chops off the segment we processed so that instance of investments wont come up again
-			statement = statement[end:]
-
-		#Takes each string of data and loads it into a JSON object
-		for data in income_data:
-			#Loads data as JSON
-			data_as_json = json.loads(data)
-			
-			#Loads the data into a file
-			with open(self.stock_symbol+str(data_as_json["endDate"]["fmt"][0:4])+".txt", "a") as output_file:
-				#Yes, still ugly, still here, still the same excuse, change will come
-				output_file.write("investments>"+str(data_as_json["investments"])+'\n')
-				output_file.write("change_to_liabilities>"+str(data_as_json["changeToLiabilities"])+'\n')
-				output_file.write("total_cashflows_from_investing_activities>"+str(data_as_json["totalCashflowsFromInvestingActivities"])+'\n')
-				output_file.write("net_borrowings>"+str(data_as_json["netBorrowings"])+'\n')
-				output_file.write("total_cash_from_financing_activities>"+str(data_as_json["totalCashFromFinancingActivities"])+'\n')
-				output_file.write("change_to_operating_activities>"+str(data_as_json["changeToOperatingActivities"])+'\n')
-				output_file.write("issuance_of_stock>"+str(data_as_json["issuanceOfStock"])+'\n')
-				output_file.write("change_in_cash>"+str(data_as_json["changeInCash"])+'\n')
-				output_file.write("repurchase_of_stock>"+str(data_as_json["repurchaseOfStock"])+'\n')
-				output_file.write("effect_of_exchange_rate>"+str(data_as_json["effectOfExchangeRate"])+'\n')
-				output_file.write("total_cash_from_operating_activities>"+str(data_as_json["totalCashFromOperatingActivities"])+'\n')
-				output_file.write("depreciation>"+str(data_as_json["depreciation"])+'\n')
-				output_file.write("other_cashflows_from_investing_activities>"+str(data_as_json["otherCashflowsFromInvestingActivities"])+'\n')
-				#output_file.write("dividends_paid>"+str(data_as_json["dividendsPaid"])+'\n')
-				#output_file.write("change_to_account_receivables>"+str(data_as_json["changeToAccountReceivables"])+'\n')
-				output_file.write("other_cashflows_from_financing_activities>"+str(data_as_json["otherCashflowsFromFinancingActivities"])+'\n')
-				output_file.write("change_to_net_income>"+str(data_as_json["changeToNetincome"])+'\n')
-				output_file.write("capital_expenditures>"+str(data_as_json["capitalExpenditures"])+'\n')
 
 	#Returns the recorded years of data
 	def getYears(self):
 		#Requires the +1 otherwise it terminates before maxYear
 		return range(self.minYear, self.maxYear+1)
-
-	#Idk, I didn't want OS imported, when I remove files and just import data directly there will be no need for this (Not that it really works anyways?)
-#	def delete_files(self):
-#		years = self.getYears()
-#		print(years)
-#		for year in years:
-#			try:
-#				print(self.stock_symbol+str(year)+".txt")
-#				os.remove(self.stock_symbol+str(year)+".txt")
-#			except OSError:
-#				pass
