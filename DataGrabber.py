@@ -13,14 +13,7 @@ class DataGrabber:
 		#Assigns stock symbol to a non-existent global variable
 		#I need to investigate this, but I suspect it's just a quirk of python
 		self.stock_symbol = stock_symbol
-		
-		#Commented out since it's not needed during testing
-		self.write_to_file()
-		
-		#Assigns a shortened segment from the file gnerated from the online resource
-		shortened_segment = self.read_from_file()
-		print("Files found!")
-
+		shortened_segment = self.grab_resource()
 		#Creates a smaller segment of JSON regarding just the cashflow
 		cashflow_statement = self.process_segment(shortened_segment, '"cashflowStatementHistory"')
 		#print(cashflow_statement)
@@ -45,30 +38,11 @@ class DataGrabber:
 		
 		#self.delete_files()
 		
-	#Function to grab online resource
-	def write_to_file(self):
-		#Assigns the shortened version of the webpage
-		shortened_segment = self.grabResource('https://finance.yahoo.com/quote/'+ self.stock_symbol +'/financials?p='+ self.stock_symbol)
-
-		#Opens/Creates a file with the ticker symbol of the stock to store data
-		#I am going to have to handle overwriting data or deleting the file later
-		with open(self.stock_symbol+".txt", "w") as output_file:
-			#Writes the shortened pieces to the file (Though this will later be formatted into a dictionary entry)
-			output_file.write(shortened_segment)
-
-	#Function to parse the <stockname> file
-	def read_from_file(self):
-		#Opens the file which in the future will have the formatted stock information
-		with open(self.stock_symbol + ".txt") as input_file:
-			#Reads the file and assigns it to a string
-			text_from_file = input_file.read()
-		#Returns the text from the file
-		return text_from_file
-
 	#Function to grab the webpage and isolate the relevant data
-	def grabResource(self, webPage):
+	def grab_resource(self):
+
 		#Assigns html as the page request
-		html = requests.get(webPage)
+		html = requests.get('https://finance.yahoo.com/quote/'+ self.stock_symbol +'/financials?p='+ self.stock_symbol)
 		#Sets the beginning index of the relevant info
 		begin = html.text.index('"QuoteSummaryStore"')
 		#Sets the ending index of the relevant info
@@ -117,19 +91,57 @@ class DataGrabber:
 		#print(income_data[0])
 		#Takes each string of data and loads it into a JSON object
 		for data in income_data:
+			print(data)
+			segmented_data = dict()
+			year = 0
 			while('"' in data):
-				begin = data.index('"')
-				end = data.index('"', begin+1)+1
-				print("Label: " + data[begin:end])
+				date = False
+				begin = data.index('"')+1
+				end = data.index('"', begin+1)
+				label=data[begin:end]
+				if("endDate" in data[begin:end]):
+					date = True
+				#Everything after label:
 				data = data[data.index(":")+1:]
 				end = data.index("}")+1
-				print("Data: " + data[:end])
-				data = data[end:]
-				
-			print()
+				contents_segment = data[:end]
+				print(contents_segment)
+				if(len(contents_segment) > 2 and label != "maxAge"):
+					contents = data[:end]
 
+					if(date):
+						begin = contents.index("fmt")
+						begin = contents.index(":", begin)+2
+						date_end = begin + 4
+						#print("Data: "+ endDate[begin:end])
+						year = contents[begin:date_end]
+						if(int(self.minYear) > int(year)):
+							self.minYear = year
+						if(int(self.maxYear) < int(year)):
+							self.maxYear = year
+						contents = str(year)
+					else:
+						begin = contents.index("raw")
+						begin = contents.index(":", begin)+1
+						end = contents.index(",", begin)
+						contents = contents[begin:end]
+						
+				else:
+					if(label == "maxAge"):
+						contents = 1
+					else:
+						contents = 0
+				end = data.index("}")+1
+				data = data[end:]
+				print("Label: " + label)
+				print("Data: " + str(contents))
+				segmented_data[label] = contents
+			self.yearly_data[str(year)] = segmented_data
+
+	def get_data(self):
+		return self.yearly_data
 
 	#Returns the recorded years of data
-	def getYears(self):
+	def get_years(self):
 		#Requires the +1 otherwise it terminates before maxYear
-		return range(self.minYear, self.maxYear+1)
+		return range(int(self.minYear), int(self.maxYear))

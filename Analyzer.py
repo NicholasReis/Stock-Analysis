@@ -12,11 +12,11 @@ class Analyzer:
 	capital_expenditures=0
 	price_vs_free_cashflow=0
 
-	def __init__(self, stock, years):
+	def __init__(self, stock):
 		#Assigns stock as a global variable so I can call the data from every function
 		self.stock = stock
 		#Assigns the years of data as global variables that I can use as keys in every function
-		self.years = years
+		self.years = stock.get_years()
 
 		#Processes all the data------------------vv
 		self.assign_annual_revenue_metric()
@@ -38,14 +38,13 @@ class Analyzer:
 	def assign_annual_revenue_metric(self):
 		#Running sum to calculate average
 		running_sum= 0
-
 		#First recorded revenue to compare against the average to see if it's increasing or decreasing overall
-		first_recorded_revenue = self.stock.getData(self.years[0], "total_revenue")
+		first_recorded_revenue = self.stock.getData(self.years[0], "totalRevenue")
 
 		#For every year we have recorded
 		for year in self.years:
 			#Add the yearly revenue to the running total
-			running_sum+=self.stock.getData(year, "total_revenue")
+			running_sum+=self.stock.getData(year, "totalRevenue")
 		
 		#if the average total revenue is larger than the first revenue
 		if(running_sum/len(self.years) > first_recorded_revenue):
@@ -72,13 +71,13 @@ class Analyzer:
 		running_profit_margin_sum = 0
 		
 		#First recorded profit margin to compare against the average to check for growth
-		first_recorded_profit_margin = self.stock.getData(self.years[0], "net_income")/self.stock.getData(self.years[0], "total_revenue")
+		first_recorded_profit_margin = self.stock.getData(self.years[0], "netIncome")/self.stock.getData(self.years[0], "totalRevenue")
 		
 		#For every year we have data on
 		for year in self.years:
 			#Grabs relevant data
-			net_income = self.stock.getData(year, "net_income")
-			total_income = self.stock.getData(year, "total_revenue")
+			net_income = self.stock.getData(year, "netIncome")
+			total_income = self.stock.getData(year, "totalRevenue")
 			#Adds the profit margin to the running sum
 			running_profit_margin_sum += net_income/total_income
 		if(running_profit_margin_sum/len(self.years) > first_recorded_profit_margin):
